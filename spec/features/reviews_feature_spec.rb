@@ -11,9 +11,18 @@ feature 'reviewing' do
   end
 
 
+  def sign_up(email, password)
+    visit '/users/sign_up'
+    fill_in 'Email', with: email
+    fill_in 'Password', with: password
+    fill_in 'Password confirmation', with: password
+    click_button 'LET ME YALP!'
+  end
+
   before { Restaurant.create name: 'KFC' }
 
-  scenario 'allow users to leave a review using a form' do
+  scenario 'allow registered users to leave a review using a form' do
+    sign_up('test@test.com', 'testtest')
     visit '/restaurants'
     click_link 'Review KFC'
     fill_in 'Thoughts', with: 'so so'
@@ -23,10 +32,28 @@ feature 'reviewing' do
     expect(page).to have_content 'so so'
   end
 
-  scenario 'displays an average rating for all reviews' do
+  scenario 'unregistered users cannot leave a review' do
+    visit '/restaurants'
+    expect(page).not_to have_link 'Review KFC'
+    restaurant = Restaurant.find_by_name('KFC')
+    visit "/restaurants/#{restaurant.id}/reviews/new"
+    expect(page).to have_content 'You need to sign in or sign up before continuing.'
+  end
+
+  scenario 'does not allow more than one review per user per Restaurant' do
+    sign_up('test@test.com', 'testtest')
     leave_review('so so', '3')
+    leave_review('great', '5')
+    expect(page).to have_content 'Sorry you have reviewed this restaurant already'
+    expect(current_path).to eq '/restaurants'
+  end
+
+  scenario 'displays an average rating for all reviews' do
+    sign_up('test@test.com', 'testtest')
+    leave_review('so so', '3')
+    click_link 'Sign out'
+    sign_up('tester2@test.com', 'testtest')
     leave_review('great', '5')
     expect(page).to have_content 'Average rating: ★★★★☆'
   end
-
 end
