@@ -11,6 +11,11 @@ feature 'endorsing reviews' do
     visit '/restaurants'
     click_link 'Endorse KFC'
     expect(page).to have_content('1 endorsement')
+    click_link 'Endorse KFC'
+    expect(page).to have_content('2 endorsement')
+    click_link 'Endorse KFC'
+    click_link 'Endorse KFC'
+    expect(page).to have_content('4 endorsement')
   end
 
 end

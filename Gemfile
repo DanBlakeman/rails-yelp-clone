@@ -1,5 +1,9 @@
 source 'https://rubygems.org'
 
+gem 'poltergeist'
+
+gem 'database_cleaner'
+
 gem 'omniauth-github'
 
 gem 'omniauth-facebook'
