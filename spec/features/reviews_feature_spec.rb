@@ -19,7 +19,13 @@ feature 'reviewing' do
     click_button 'LET ME YALP!'
   end
 
-  before { Restaurant.create name: 'KFC' }
+  before {
+          sign_up('tester@before.com', 'testtest')
+          click_link 'Add a restaurant'
+          fill_in 'Name', with: 'KFC'
+          click_button 'Create Restaurant'
+
+            }
 
   scenario 'allow registered users to leave a review using a form' do
     sign_up('test@test.com', 'testtest')
@@ -57,25 +63,25 @@ feature 'reviewing' do
     expect(page).to have_content 'Average rating: ★★★★☆'
   end
 
-  # context 'users can only delete their own reviews' do
+  context 'users cannot delete their own review they did not make' do
 
-  #   scenario 'logged out user' do
-  #     visit '/restaurants'
-  #     expect(page).not_to have_link 'Delete KFC'
-  #     restaurant = Restaurant.find_by_name('KFC')
-  #     visit "/restaurants/#{restaurant.id}/reviews/new"
-  #     expect(page).to have_content 'Users can only delete restaurants they have created!'
-  #   end
+    scenario 'logged out user' do
+      visit '/restaurants'
+      expect(page).not_to have_link 'Delete KFC'
+      restaurant = Restaurant.find_by_name('KFC')
+      page.driver.submit :delete, "/restaurants/#{restaurant.id}/reviews/#{review.id}", {}
+      expect(page).to have_content 'You need to sign in or sign up before continuing'
+    end
 
-  #   scenario 'logged in user' do
-  #     sign_up('test@test.com', 'testtest')
-  #     visit '/restaurants'
-  #     expect(page).not_to have_link 'Delete KFC'
-  #     restaurant = Restaurant.find_by_name('KFC')
-  #     visit "/restaurants/#{restaurant.id}/reviews/new"
-  #     expect(page).to have_content 'Users can only delete restaurants they have created!'
-  #   end
-  # end
+    scenario 'logged in user' do
+      sign_up('test@test.com', 'testtest')
+      visit '/restaurants'
+      expect(page).not_to have_link 'Delete KFC'
+      restaurant = Restaurant.find_by_name('KFC')
+      page.driver.submit :delete, "/restaurants/#{restaurant.id}/reviews/#{review.id}", {}
+      expect(page).to have_content 'Users can only delete restaurants they have created!'
+    end
+  end
 
   scenario 'users can delete their own review' do
     sign_up('test@test.com', 'testtest')
@@ -86,7 +92,7 @@ feature 'reviewing' do
     click_button 'Leave Review'
     expect(current_path).to eq '/restaurants'
     click_link 'Delete this review'
-    expect(page).to_have content 'Review deleted'
+    expect(page).to have_content 'Review deleted'
     expect(page).not_to have_content 'so so'
     expect(current_path).to eq '/restaurants'
   end

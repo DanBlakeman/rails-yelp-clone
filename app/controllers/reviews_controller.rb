@@ -19,6 +19,16 @@ class ReviewsController < ApplicationController
     redirect_to restaurants_path
   end
 
+  def destroy
+    if current_user.reviews.include?(Review.find_by_id(params[:id]))
+      current_user.reviews.destroy(params[:id])
+      flash[:notice] = 'Review deleted'
+    else
+      flash[:notice] = 'fail'
+    end
+    redirect_to restaurants_path
+  end
+
   def review_params
     params.require(:review).permit(:thoughts, :rating)
   end
