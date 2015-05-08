@@ -26,8 +26,6 @@ feature 'reviewing' do
 
             }
 
-  before { Restaurant.create name: 'KFC' }
-
   scenario 'allow users to leave a review using a form' do
     visit '/restaurants'
     click_link 'Review KFC'
@@ -65,7 +63,6 @@ feature 'reviewing' do
   # end
 
   # scenario 'users can delete their own review' do
-  #   sign_up('test@test.com', 'testtest')
   #   visit '/restaurants'
   #   click_link 'Review KFC'
   #   fill_in 'Thoughts', with: 'so so'

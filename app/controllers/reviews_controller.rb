@@ -13,12 +13,8 @@ class ReviewsController < ApplicationController
   end
 
   def destroy
-    if current_user.reviews.include?(Review.find_by_id(params[:id]))
-      current_user.reviews.destroy(params[:id])
-      flash[:notice] = 'Review deleted'
-    else
-      flash[:notice] = 'fail'
-    end
+    current_user.reviews.destroy(params[:id])
+    flash[:notice] = 'Review deleted'
     redirect_to restaurants_path
   end
 
