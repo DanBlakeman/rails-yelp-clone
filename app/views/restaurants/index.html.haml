@@ -19,8 +19,9 @@
           %li
             = review.thoughts
             %strong= "#{review.rating}/5"
-            = link_to "Endorse #{restaurant.name}", review_endorsements_path(review.id), method: :post
-            %p= pluralize review.endorsements.count, 'endorsement'
+            = link_to "Endorse #{restaurant.name}", review_endorsements_path(review.id), class: 'endorsements-link'
+            %span.endorsements_count= review.endorsements.count
+            %p= 'endorsement'.pluralize review.endorsements.count
     - else
       %p No reviews
 - else
